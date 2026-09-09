@@ -721,7 +721,7 @@ function fwExplode(x, y){
   const ci = Math.floor(Math.random() * FW_COLORS.length);
   const color = FW_COLORS[ci];
   const rgb = FW_RGB[ci];
-  const count = 80 + Math.floor(Math.random() * 50);
+  const count = 100 + Math.floor(Math.random() * 60);
   const type = Math.random();
   for(let i = 0; i < count; i++){
     let vx, vy;
@@ -745,7 +745,7 @@ function fwExplode(x, y){
       x, y, vx, vy,
       color, rgb,
       life: 1,
-      decay: 0.006 + Math.random() * 0.01,
+      decay: 0.003 + Math.random() * 0.006,
       size: 2 + Math.random() * 2.5,
       trail: []
     });
@@ -757,12 +757,13 @@ function startFireworks(){
   fwParticles = [];
   fwRockets = [];
   let launched = 0;
-  const totalRockets = 12;
+  const totalRockets = 20;
   function launchNext(){
     if(!fwActive || launched >= totalRockets) return;
     fwRockets.push(fwCreateRocket());
     launched++;
-    setTimeout(launchNext, 250 + Math.random() * 350);
+    const delay = launched <= 8 ? 200 + Math.random() * 300 : 350 + Math.random() * 500;
+    setTimeout(launchNext, delay);
   }
   launchNext();
   animateFireworks();
@@ -808,8 +809,8 @@ function animateFireworks(){
     if(p.trail.length > 6) p.trail.shift();
     p.x += p.vx;
     p.y += p.vy;
-    p.vy += 0.035;
-    p.vx *= 0.985;
+    p.vy += 0.02;
+    p.vx *= 0.992;
     p.life -= p.decay;
     p.trail.forEach(t => { t.life -= 0.15; });
     p.trail = p.trail.filter(t => t.life > 0);
