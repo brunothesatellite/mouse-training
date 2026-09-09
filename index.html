@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mouse Training - Entraînement Spatial</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-user-select:none}
+:root{--primary:#00e5ff;--secondary:#b040ff;--accent:#39ff14;--danger:#ff1744;--bg-dark:#060620;--bg-card:rgba(255,255,255,0.06)}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg-dark);color:#fff}
+.screen{position:absolute;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:1}
+.screen.active{display:flex}
+
+.bg-1{background:radial-gradient(ellipse at 20% 50%,#1a0033 0%,#0d001a 50%,#050510 100%),radial-gradient(ellipse at 80% 20%,rgba(0,229,255,0.08) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(176,64,255,0.06) 0%,transparent 50%),linear-gradient(180deg,#060620 0%,#0a0a30 50%,#060620 100%)}
+.bg-2{background:radial-gradient(ellipse at 70% 30%,#001a33 0%,#000d1a 50%,#050510 100%),radial-gradient(ellipse at 20% 70%,rgba(57,255,20,0.06) 0%,transparent 50%),radial-gradient(ellipse at 90% 80%,rgba(0,229,255,0.05) 0%,transparent 50%),linear-gradient(180deg,#060620 0%,#001020 50%,#060620 100%)}
+.bg-3{background:radial-gradient(ellipse at 30% 20%,#1a001a 0%,#0d000d 50%,#050510 100%),radial-gradient(ellipse at 80% 60%,rgba(176,64,255,0.08) 0%,transparent 50%),radial-gradient(ellipse at 10% 90%,rgba(255,23,68,0.04) 0%,transparent 50%),linear-gradient(180deg,#060620 0%,#150020 50%,#060620 100%)}
+.bg-4{background:radial-gradient(ellipse at 50% 50%,#001a1a 0%,#000d0d 50%,#050510 100%),radial-gradient(ellipse at 10% 30%,rgba(0,229,255,0.07) 0%,transparent 50%),radial-gradient(ellipse at 85% 85%,rgba(57,255,20,0.05) 0%,transparent 50%),linear-gradient(180deg,#060620 0%,#001515 50%,#060620 100%)}
+.bg-5{background:radial-gradient(ellipse at 60% 40%,#1a1a00 0%,#0d0d00 50%,#050510 100%),radial-gradient(ellipse at 20% 80%,rgba(255,200,0,0.05) 0%,transparent 50%),radial-gradient(ellipse at 90% 20%,rgba(176,64,255,0.06) 0%,transparent 50%),linear-gradient(180deg,#060620 0%,#151500 50%,#060620 100%)}
+
+.menu-title{font-size:clamp(2rem,6vw,4rem);font-weight:900;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:none;margin-bottom:0.2em;animation:titlePulse 3s ease-in-out infinite}
+.menu-subtitle{font-size:clamp(0.9rem,2.5vw,1.4rem);color:rgba(255,255,255,0.5);margin-bottom:2.5em;letter-spacing:2px}
+@keyframes titlePulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+
+.btn{display:block;width:min(340px,85vw);padding:18px 30px;margin:10px auto;border:2px solid var(--primary);background:rgba(0,229,255,0.08);color:var(--primary);font-size:1.3rem;font-weight:700;border-radius:14px;cursor:pointer;transition:all .25s ease;letter-spacing:1px;position:relative;overflow:hidden}
+.btn:hover{background:rgba(0,229,255,0.2);box-shadow:0 0 30px rgba(0,229,255,0.25),inset 0 0 30px rgba(0,229,255,0.05);transform:scale(1.03)}
+.btn:active{transform:scale(0.97)}
+.btn-secondary{border-color:var(--secondary);color:var(--secondary);background:rgba(176,64,255,0.08)}
+.btn-secondary:hover{background:rgba(176,64,255,0.2);box-shadow:0 0 30px rgba(176,64,255,0.25)}
+.btn-accent{border-color:var(--accent);color:var(--accent);background:rgba(57,255,20,0.08)}
+.btn-accent:hover{background:rgba(57,255,20,0.2);box-shadow:0 0 30px rgba(57,255,20,0.25)}
+.btn-danger{border-color:var(--danger);color:var(--danger);background:rgba(255,23,68,0.08)}
+.btn-danger:hover{background:rgba(255,23,68,0.2);box-shadow:0 0 30px rgba(255,23,68,0.25)}
+.btn-small{width:auto;display:inline-block;padding:12px 24px;font-size:1rem;margin:5px}
+
+.level-select-title{font-size:clamp(1.5rem,4vw,2.5rem);font-weight:700;color:var(--primary);margin-bottom:0.3em}
+.level-select-subtitle{font-size:1rem;color:rgba(255,255,255,0.45);margin-bottom:1.5em}
+
+.level-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;width:min(700px,90vw);max-height:60vh;overflow-y:auto;padding:10px;margin-bottom:1.5em}
+.level-grid::-webkit-scrollbar{width:6px}
+.level-grid::-webkit-scrollbar-track{background:rgba(255,255,255,0.03);border-radius:3px}
+.level-grid::-webkit-scrollbar-thumb{background:rgba(0,229,255,0.3);border-radius:3px}
+
+.level-card{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 10px;border:2px solid rgba(255,255,255,0.12);border-radius:14px;cursor:pointer;transition:all .25s;background:var(--bg-card);min-height:80px}
+.level-card:hover{border-color:var(--primary);background:rgba(0,229,255,0.1);box-shadow:0 0 20px rgba(0,229,255,0.15);transform:scale(1.05)}
+.level-card .num{font-size:1.8rem;font-weight:900;color:var(--primary)}
+.level-card .info{font-size:0.7rem;color:rgba(255,255,255,0.45);margin-top:4px;text-align:center;line-height:1.3}
+
+#game-container{position:absolute;top:0;left:0;width:100%;height:100%}
+#game-area{position:absolute;top:0;left:0;width:100%;height:100%}
+
+.hud{position:absolute;top:0;left:0;width:100%;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;z-index:10;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,0.55) 0%,transparent 100%)}
+.hud-level{font-size:1.1rem;font-weight:700;color:var(--primary);text-shadow:0 0 10px rgba(0,229,255,0.5)}
+.hud-timer{font-size:1.8rem;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;text-shadow:0 0 12px rgba(255,255,255,0.4);letter-spacing:1px}
+.hud-lives{display:flex;gap:6px}
+.hud-heart{width:32px;height:32px;transition:all .3s ease;filter:drop-shadow(0 0 6px rgba(255,23,68,0.5))}
+.hud-heart.lost{opacity:0.15;filter:none;transform:scale(0.8)}
+
+#countdown-overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:none;align-items:center;justify-content:center;z-index:100;background:rgba(6,6,32,0.85)}
+#countdown-overlay.active{display:flex}
+#countdown-number{font-size:clamp(6rem,25vw,15rem);font-weight:900;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:countdownPop .7s ease-out}
+@keyframes countdownPop{0%{transform:scale(2.5);opacity:0}50%{transform:scale(0.9);opacity:1}100%{transform:scale(1);opacity:1}}
+
+.sphere{position:absolute;border-radius:50%;cursor:pointer;transition:transform .1s ease;z-index:5}
+.sphere:hover{transform:scale(1.1)}
+.sphere.eliminating{animation:sphereEliminate .35s ease-out forwards;pointer-events:none}
+@keyframes sphereEliminate{0%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:0.6}100%{transform:scale(0);opacity:0}}
+
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(6,6,32,0.88);display:none;align-items:center;justify-content:center;z-index:200}
+.modal-overlay.active{display:flex}
+.modal-content{text-align:center;padding:40px 50px;border-radius:24px;border:2px solid rgba(255,255,255,0.1);background:rgba(10,10,40,0.95);max-width:min(500px,90vw);box-shadow:0 0 60px rgba(0,229,255,0.15);animation:modalIn .4s ease-out}
+@keyframes modalIn{0%{transform:scale(0.7);opacity:0}100%{transform:scale(1);opacity:1}}
+.modal-title{font-size:2rem;font-weight:900;margin-bottom:0.3em}
+.modal-title.win{background:linear-gradient(135deg,var(--accent),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.modal-title.lose{color:var(--danger)}
+.modal-title.super{font-size:2.4rem;background:linear-gradient(135deg,#ffd700,var(--accent),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titlePulse 1.5s ease-in-out infinite}
+.modal-message{font-size:1.15rem;color:rgba(255,255,255,0.75);margin-bottom:0.8em;line-height:1.6}
+.modal-time{font-size:1.6rem;font-weight:700;color:var(--accent);margin-bottom:1em}
+.modal-levels-summary{margin:15px 0;text-align:left;max-height:250px;overflow-y:auto;padding:10px;background:rgba(255,255,255,0.03);border-radius:12px}
+.modal-levels-summary .level-row{display:flex;justify-content:space-between;padding:6px 10px;border-bottom:1px solid rgba(255,255,255,0.06);font-size:0.95rem}
+.modal-levels-summary .level-row span:first-child{color:rgba(255,255,255,0.6)}
+.modal-levels-summary .level-row span:last-child{color:var(--accent);font-weight:700}
+.modal-total{font-size:1.3rem;font-weight:900;color:var(--primary);margin:10px 0 15px;padding-top:10px;border-top:2px solid rgba(0,229,255,0.2)}
+.modal-buttons{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:10px}
+
+#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:150;pointer-events:none}
+
+@media(max-width:600px){
+  .hud{padding:10px 14px}
+  .hud-timer{font-size:1.3rem}
+  .hud-heart{width:26px;height:26px}
+  .modal-content{padding:25px 20px}
+  .modal-title{font-size:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- MENU SCREEN -->
+<div id="menu-screen" class="screen bg-1 active">
+  <div class="menu-title">Mouse Training</div>
+  <div class="menu-subtitle">Entrainement Spatial</div>
+  <button class="btn" onclick="showLevelSelect()">Entrainement</button>
+  <button class="btn btn-secondary" onclick="startChallenge()">Challenge</button>
+</div>
+
+<!-- LEVEL SELECT SCREEN -->
+<div id="level-screen" class="screen bg-1">
+  <div class="level-select-title">Choisis ton Niveau</div>
+  <div class="level-select-subtitle">13 niveaux pour devenir un as de la souris</div>
+  <div class="level-grid" id="level-grid"></div>
+  <button class="btn btn-small" onclick="showScreen('menu-screen')">Retour</button>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="game-screen" class="screen">
+  <div id="game-container">
+    <div class="hud">
+      <div class="hud-level" id="hud-level">Niveau 1</div>
+      <div class="hud-timer" id="hud-timer">0.0</div>
+      <div class="hud-lives" id="hud-lives"></div>
+    </div>
+    <div id="game-area" oncontextmenu="return false"></div>
+  </div>
+</div>
+
+<!-- COUNTDOWN OVERLAY -->
+<div id="countdown-overlay">
+  <div id="countdown-number">3</div>
+</div>
+
+<!-- WIN MODAL -->
+<div class="modal-overlay" id="win-modal">
+  <div class="modal-content">
+    <div class="modal-title win" id="win-title">Victoire !</div>
+    <div class="modal-message" id="win-message">Toutes les spheres ont ete eliminees !</div>
+    <div class="modal-time" id="win-time"></div>
+    <div id="win-levels-container"></div>
+    <div class="modal-buttons" id="win-buttons"></div>
+  </div>
+</div>
+
+<!-- LOSE MODAL -->
+<div class="modal-overlay" id="lose-modal">
+  <div class="modal-content">
+    <div class="modal-title lose">Perdu !</div>
+    <div class="modal-message" id="lose-message"></div>
+    <div class="modal-buttons" id="lose-buttons"></div>
+  </div>
+</div>
+
+<!-- CONFETTI CANVAS -->
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+// ==================== CONFIGURATION ====================
+const LEVELS = [
+  {id:1, spheres:5, size:'grande', speed:0, movement:false, label:'5 spheres immobiles - Grande'},
+  {id:2, spheres:5, size:'moyenne', speed:0, movement:false, label:'5 spheres immobiles - Moyenne'},
+  {id:3, spheres:5, size:'petite', speed:0, movement:false, label:'5 spheres immobiles - Petite'},
+  {id:4, spheres:5, size:'grande', speed:1, movement:true, label:'Grande - Lente'},
+  {id:5, spheres:5, size:'moyenne', speed:1, movement:true, label:'Moyenne - Lente'},
+  {id:6, spheres:5, size:'petite', speed:1, movement:true, label:'Petite - Lente'},
+  {id:7, spheres:5, size:'grande', speed:2, movement:true, label:'Grande - Moyenne'},
+  {id:8, spheres:5, size:'moyenne', speed:2, movement:true, label:'Moyenne - Moyenne'},
+  {id:9, spheres:5, size:'petite', speed:2, movement:true, label:'Petite - Moyenne'},
+  {id:10, spheres:5, size:'grande', speed:3, movement:true, label:'Grande - Rapide'},
+  {id:11, spheres:5, size:'moyenne', speed:3, movement:true, label:'Moyenne - Rapide'},
+  {id:12, spheres:5, size:'petite', speed:3, movement:true, label:'Petite - Rapide'},
+  {id:13, spheres:5, size:'random', speed:'random', movement:true, label:'ALEATOIRE'}
+];
+
+const SIZES = {grande:90, moyenne:62, petite:42};
+const SPEEDS = {1:1.3, 2:2.8, 3:4.8};
+const BG_CLASSES = ['bg-1','bg-2','bg-3','bg-4','bg-5'];
+
+// ==================== AUDIO ====================
+let audioCtx = null;
+function ensureAudio(){if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)()}
+function playClick(){
+  try{ensureAudio();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.type='sine';o.frequency.setValueAtTime(880,audioCtx.currentTime);o.frequency.exponentialRampToValueAtTime(1320,audioCtx.currentTime+0.05);g.gain.setValueAtTime(0.15,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.1);o.start();o.stop(audioCtx.currentTime+0.1)}catch(e){}
+}
+function playEliminate(){
+  try{ensureAudio();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.type='sine';o.frequency.setValueAtTime(600,audioCtx.currentTime);o.frequency.exponentialRampToValueAtTime(1200,audioCtx.currentTime+0.08);o.frequency.exponentialRampToValueAtTime(200,audioCtx.currentTime+0.2);g.gain.setValueAtTime(0.2,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.25);o.start();o.stop(audioCtx.currentTime+0.25)}catch(e){}
+}
+function playLoseLife(){
+  try{ensureAudio();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.type='sawtooth';o.frequency.setValueAtTime(200,audioCtx.currentTime);o.frequency.exponentialRampToValueAtTime(80,audioCtx.currentTime+0.3);g.gain.setValueAtTime(0.12,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.35);o.start();o.stop(audioCtx.currentTime+0.35)}catch(e){}
+}
+function playWin(){
+  try{ensureAudio();[523,659,784,1047].forEach((f,i)=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0.12,audioCtx.currentTime+i*0.12);g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+i*0.12+0.3);o.start(audioCtx.currentTime+i*0.12);o.stop(audioCtx.currentTime+i*0.12+0.3)})}catch(e){}
+}
+function playLose(){
+  try{ensureAudio();[300,250,200,150].forEach((f,i)=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.type='sawtooth';o.frequency.value=f;g.gain.setValueAtTime(0.1,audioCtx.currentTime+i*0.15);g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+i*0.15+0.25);o.start(audioCtx.currentTime+i*0.15);o.stop(audioCtx.currentTime+i*0.15+0.25)})}catch(e){}
+}
+
+// ==================== STATE ====================
+let state = {
+  mode: 'training',    // 'training' | 'challenge'
+  currentLevel: 1,
+  lives: 3,
+  timerStart: 0,
+  timerElapsed: 0,
+  spheres: [],
+  spheresRemaining: 0,
+  spheresEliminated: 0,
+  running: false,
+  countdownActive: false,
+  challengeTimes: [],
+  animFrameId: null,
+  lastFrameTime: 0,
+  currentBg: ''
+};
+
+// ==================== SVG SPHERE FACES ====================
+const FACE_TYPES = [
+  // Angry furieux
+  (s) => `<path d="M${s*0.28},${s*0.22} L${s*0.42},${s*0.30}" stroke="#fff" stroke-width="${s*0.045}" stroke-linecap="round"/>
+    <path d="M${s*0.72},${s*0.22} L${s*0.58},${s*0.30}" stroke="#fff" stroke-width="${s*0.045}" stroke-linecap="round"/>
+    <circle cx="${s*0.35}" cy="${s*0.38}" r="${s*0.07}" fill="#fff"/>
+    <circle cx="${s*0.65}" cy="${s*0.38}" r="${s*0.07}" fill="#fff"/>
+    <circle cx="${s*0.35}" cy="${s*0.38}" r="${s*0.035}" fill="#111"/>
+    <circle cx="${s*0.65}" cy="${s*0.38}" r="${s*0.035}" fill="#111"/>
+    <path d="M${s*0.32},${s*0.65} Q${s*0.5},${s*0.55} ${s*0.68},${s*0.65}" stroke="#fff" stroke-width="${s*0.035}" fill="none" stroke-linecap="round"/>
+    <line x1="${s*0.46}" y1="${s*0.72}" x2="${s*0.54}" y2="${s*0.72}" stroke="#fff" stroke-width="${s*0.025}"/>`,
+  // Devilish
+  (s) => `<path d="M${s*0.25},${s*0.24} L${s*0.42},${s*0.32}" stroke="#ff0" stroke-width="${s*0.04}" stroke-linecap="round"/>
+    <path d="M${s*0.75},${s*0.24} L${s*0.58},${s*0.32}" stroke="#ff0" stroke-width="${s*0.04}" stroke-linecap="round"/>
+    <circle cx="${s*0.35}" cy="${s*0.38}" r="${s*0.065}" fill="#ff0"/>
+    <circle cx="${s*0.65}" cy="${s*0.38}" r="${s*0.065}" fill="#ff0"/>
+    <circle cx="${s*0.35}" cy="${s*0.38}" r="${s*0.03}" fill="#111"/>
+    <circle cx="${s*0.65}" cy="${s*0.38}" r="${s*0.03}" fill="#111"/>
+    <ellipse cx="${s*0.5}" cy="${s*0.65}" rx="${s*0.15}" ry="${s*0.10}" fill="#111" stroke="#fff" stroke-width="${s*0.025}"/>
+    <path d="M${s*0.42},${s*0.73} L${s*0.50},${s*0.66} L${s*0.58},${s*0.73}" fill="#fff"/>`,
+  // Sneaky
+  (s) => `<path d="M${s*0.25},${s*0.28} L${s*0.42},${s*0.33}" stroke="#0ff" stroke-width="${s*0.04}" stroke-linecap="round"/>
+    <path d="M${s*0.75},${s*0.28} L${s*0.58},${s*0.33}" stroke="#0ff" stroke-width="${s*0.04}" stroke-linecap="round"/>
+    <ellipse cx="${s*0.35}" cy="${s*0.38}" rx="${s*0.08}" ry="${s*0.055}" fill="#fff"/>
+    <ellipse cx="${s*0.65}" cy="${s*0.38}" rx="${s*0.08}" ry="${s*0.055}" fill="#fff"/>
+    <circle cx="${s*0.38}" cy="${s*0.38}" r="${s*0.03}" fill="#111"/>
+    <circle cx="${s*0.68}" cy="${s*0.38}" r="${s*0.03}" fill="#111"/>
+    <path d="M${s*0.35},${s*0.66} Q${s*0.50},${s*0.60} ${s*0.65},${s*0.66}" stroke="#fff" stroke-width="${s*0.035}" fill="none" stroke-linecap="round"/>
+    <circle cx="${s*0.56}" cy="${s*0.74}" r="${s*0.015}" fill="#fff"/>`,
+  // Evil grin
+  (s) => `<path d="M${s*0.22},${s*0.25} L${s*0.42},${s*0.32}" stroke="#f0f" stroke-width="${s*0.04}" stroke-linecap="round"/>
+    <path d="M${s*0.78},${s*0.25} L${s*0.58},${s*0.32}" stroke="#f0f" stroke-width="${s*0.04}" stroke-linecap="round"/>
+    <circle cx="${s*0.35}" cy="${s*0.38}" r="${s*0.06}" fill="#f0f"/>
+    <circle cx="${s*0.65}" cy="${s*0.38}" r="${s*0.06}" fill="#f0f"/>
+    <circle cx="${s*0.35}" cy="${s*0.38}" r="${s*0.028}" fill="#111"/>
+    <circle cx="${s*0.65}" cy="${s*0.38}" r="${s*0.028}" fill="#111"/>
+    <path d="M${s*0.30},${s*0.62} Q${s*0.50},${s*0.78} ${s*0.70},${s*0.62}" stroke="#fff" stroke-width="${s*0.035}" fill="none" stroke-linecap="round"/>
+    <line x1="${s*0.38}" y1="${s*0.67}" x2="${s*0.38}" y2="${s*0.73}" stroke="#fff" stroke-width="${s*0.02}"/>
+    <line x1="${s*0.50}" y1="${s*0.69}" x2="${s*0.50}" y2="${s*0.75}" stroke="#fff" stroke-width="${s*0.02}"/>
+    <line x1="${s*0.62}" y1="${s*0.67}" x2="${s*0.62}" y2="${s*0.73}" stroke="#fff" stroke-width="${s*0.02}"/>`,
+  // Shocked
+  (s) => `<circle cx="${s*0.35}" cy="${s*0.35}" r="${s*0.10}" fill="#fff"/>
+    <circle cx="${s*0.65}" cy="${s*0.35}" r="${s*0.10}" fill="#fff"/>
+    <circle cx="${s*0.35}" cy="${s*0.35}" r="${s*0.05}" fill="#111"/>
+    <circle cx="${s*0.65}" cy="${s*0.35}" r="${s*0.05}" fill="#111"/>
+    <circle cx="${s*0.33}" cy="${s*0.33}" r="${s*0.018}" fill="#fff"/>
+    <circle cx="${s*0.63}" cy="${s*0.33}" r="${s*0.018}" fill="#fff"/>
+    <ellipse cx="${s*0.5}" cy="${s*0.68}" rx="${s*0.09}" ry="${s*0.10}" fill="#111" stroke="#fff" stroke-width="${s*0.025}"/>
+    <path d="M${s*0.22},${s*0.22} L${s*0.42},${s*0.28}" stroke="#fff" stroke-width="${s*0.035}" stroke-linecap="round"/>
+    <path d="M${s*0.78},${s*0.22} L${s*0.58},${s*0.28}" stroke="#fff" stroke-width="${s*0.035}" stroke-linecap="round"/>`
+];
+
+const SPHERE_GRADIENTS = [
+  {inner:'#ff4081', outer:'#c51162', glow:'rgba(255,64,129,0.5)'},
+  {inner:'#7c4dff', outer:'#6200ea', glow:'rgba(124,77,255,0.5)'},
+  {inner:'#00e5ff', outer:'#006064', glow:'rgba(0,229,255,0.5)'},
+  {inner:'#76ff03', outer:'#33691e', glow:'rgba(118,255,3,0.5)'},
+  {inner:'#ff6d00', outer:'#bf360c', glow:'rgba(255,109,0,0.5)'},
+  {inner:'#e040fb', outer:'#7b1fa2', glow:'rgba(224,64,251,0.5)'},
+  {inner:'#ffd740', outer:'#ff6f00', glow:'rgba(255,215,64,0.5)'},
+  {inner:'#448aff', outer:'#1a237e', glow:'rgba(68,138,255,0.5)'}
+];
+
+function createSphereSVG(id, size) {
+  const s = size;
+  const grad = SPHERE_GRADIENTS[Math.floor(Math.random() * SPHERE_GRADIENTS.length)];
+  const face = FACE_TYPES[Math.floor(Math.random() * FACE_TYPES.length)];
+  const gid = 'sg' + id + '_' + Math.random().toString(36).substr(2,5);
+
+  return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="${gid}" cx="35%" cy="35%">
+        <stop offset="0%" stop-color="${grad.inner}"/>
+        <stop offset="100%" stop-color="${grad.outer}"/>
+      </radialGradient>
+      <filter id="gl${gid}">
+        <feGaussianBlur stdDeviation="${s*0.06}" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <circle cx="${s/2}" cy="${s/2}" r="${s*0.44}" fill="url(#${gid})" filter="url(#gl${gid})" stroke="rgba(255,255,255,0.25)" stroke-width="${s*0.02}"/>
+    <circle cx="${s*0.38}" cy="${s*0.32}" r="${s*0.10}" fill="rgba(255,255,255,0.15)"/>
+    <g>${face(s)}</g>
+  </svg>`;
+}
+
+// ==================== HEARTS SVG ====================
+function heartSVG(){
+  return `<svg viewBox="0 0 24 24" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#ff1744"/>
+  </svg>`;
+}
+
+// ==================== SCREEN MANAGEMENT ====================
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ==================== MENU ====================
+function showLevelSelect(){
+  ensureAudio();
+  playClick();
+  const grid = document.getElementById('level-grid');
+  grid.innerHTML = '';
+  LEVELS.forEach(lv => {
+    const card = document.createElement('div');
+    card.className = 'level-card';
+    const sizeLabel = lv.size === 'random' ? '?' : lv.size.charAt(0).toUpperCase() + lv.size.slice(1);
+    const speedLabel = lv.movement ? (lv.speed === 'random' ? '?' : ['','Lente','Moyenne','Rapide'][lv.speed]) : 'Immobile';
+    card.innerHTML = `<div class="num">${lv.id}</div><div class="info">${sizeLabel}<br>${speedLabel}</div>`;
+    card.onclick = () => { playClick(); startLevel(lv.id, 'training'); };
+    grid.appendChild(card);
+  });
+  showScreen('level-screen');
+}
+
+// ==================== COUNTDOWN ====================
+function runCountdown(callback){
+  state.countdownActive = true;
+  const overlay = document.getElementById('countdown-overlay');
+  const numEl = document.getElementById('countdown-number');
+  overlay.classList.add('active');
+
+  let count = 3;
+  numEl.textContent = count;
+  numEl.style.animation = 'none';
+  void numEl.offsetWidth;
+  numEl.style.animation = '';
+
+  const interval = setInterval(() => {
+    count--;
+    if(count > 0){
+      numEl.textContent = count;
+      numEl.style.animation = 'none';
+      void numEl.offsetWidth;
+      numEl.style.animation = '';
+    } else if(count === 0){
+      numEl.textContent = 'GO !';
+      numEl.style.animation = 'none';
+      void numEl.offsetWidth;
+      numEl.style.animation = '';
+      try{ensureAudio();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.type='sine';o.frequency.value=1000;g.gain.setValueAtTime(0.2,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.3);o.start();o.stop(audioCtx.currentTime+0.3)}catch(e){}
+    } else {
+      clearInterval(interval);
+      overlay.classList.remove('active');
+      state.countdownActive = false;
+      callback();
+    }
+  }, 800);
+}
+
+// ==================== START LEVEL ====================
+function startLevel(levelNum, mode){
+  if(state.animFrameId){cancelAnimationFrame(state.animFrameId);state.animFrameId=null}
+
+  state.mode = mode;
+  state.currentLevel = levelNum;
+  state.lives = 3;
+  state.spheres = [];
+  state.spheresEliminated = 0;
+  state.running = false;
+  state.timerElapsed = 0;
+
+  const lv = LEVELS[levelNum - 1];
+  state.spheresRemaining = lv.spheres;
+
+  showScreen('game-screen');
+  document.getElementById('hud-level').textContent = mode === 'challenge' ? `Challenge - Niveau ${levelNum}` : `Niveau ${levelNum} - ${lv.label}`;
+  renderHearts();
+  document.getElementById('hud-timer').textContent = '0.0';
+
+  const area = document.getElementById('game-area');
+  area.innerHTML = '';
+  state.currentBg = BG_CLASSES[Math.floor(Math.random() * BG_CLASSES.length)];
+  document.getElementById('game-screen').className = 'screen active ' + state.currentBg;
+
+  runCountdown(() => {
+    state.timerStart = performance.now();
+    state.running = true;
+    state.lastFrameTime = performance.now();
+    spawnSphere();
+    gameLoop();
+  });
+}
+
+// ==================== SPAWN SPHERE ====================
+let sphereIdCounter = 0;
+function spawnSphere(){
+  const lv = LEVELS[state.currentLevel - 1];
+  if(state.spheresEliminated >= lv.spheres) return;
+
+  const area = document.getElementById('game-area');
+  const areaW = area.offsetWidth;
+  const areaH = area.offsetHeight;
+
+  let sizeName = lv.size;
+  let speedName = lv.speed;
+  if(sizeName === 'random') sizeName = ['grande','moyenne','petite'][Math.floor(Math.random()*3)];
+  if(speedName === 'random') speedName = [1,2,3][Math.floor(Math.random()*3)];
+
+  const pxSize = SIZES[sizeName];
+  const margin = pxSize / 2 + 10;
+
+  let x = margin + Math.random() * (areaW - pxSize - margin * 2);
+  let y = margin + Math.random() * (areaH - pxSize - margin * 2);
+
+  let dx = 0, dy = 0;
+  if(lv.movement){
+    const spd = SPEEDS[speedName];
+    const angle = Math.random() * Math.PI * 2;
+    dx = Math.cos(angle) * spd;
+    dy = Math.sin(angle) * spd;
+  }
+
+  const id = sphereIdCounter++;
+  const sphereData = {id, x, y, dx, dy, size: pxSize, sizeName, speedName, element: null};
+  state.spheres.push(sphereData);
+
+  const el = document.createElement('div');
+  el.className = 'sphere';
+  el.id = 'sphere-' + id;
+  el.style.width = pxSize + 'px';
+  el.style.height = pxSize + 'px';
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  el.innerHTML = createSphereSVG(id, pxSize);
+  el.addEventListener('click', (e) => { e.stopPropagation(); onSphereClick(id); });
+
+  area.appendChild(el);
+  sphereData.element = el;
+}
+
+// ==================== SPHERE CLICK ====================
+function onSphereClick(id){
+  if(!state.running) return;
+  playEliminate();
+
+  const idx = state.spheres.findIndex(s => s.id === id);
+  if(idx === -1) return;
+
+  const sphere = state.spheres[idx];
+  if(sphere.element) sphere.element.classList.add('eliminating');
+
+  state.spheres.splice(idx, 1);
+  state.spheresEliminated++;
+
+  setTimeout(() => {
+    if(sphere.element && sphere.element.parentNode) sphere.element.parentNode.removeChild(sphere.element);
+  }, 400);
+
+  const lv = LEVELS[state.currentLevel - 1];
+  if(state.spheresEliminated >= lv.spheres){
+    setTimeout(() => onLevelWin(), 500);
+  } else {
+    setTimeout(() => spawnSphere(), 600);
+  }
+}
+
+// ==================== MISCLICK (click on area, not sphere) ====================
+document.addEventListener('click', (e) => {
+  if(!state.running || state.countdownActive) return;
+  if(e.target.closest('.sphere')) return;
+  if(e.target.closest('.modal-overlay')) return;
+  if(e.target.closest('.btn')) return;
+
+  playLoseLife();
+  state.lives--;
+  renderHearts();
+
+  if(state.lives <= 0){
+    setTimeout(() => onLevelLose(), 300);
+  }
+});
+
+// ==================== RENDER HEARTS ====================
+function renderHearts(){
+  const container = document.getElementById('hud-lives');
+  container.innerHTML = '';
+  for(let i = 0; i < 3; i++){
+    const span = document.createElement('span');
+    span.className = 'hud-heart' + (i >= state.lives ? ' lost' : '');
+    span.innerHTML = heartSVG();
+    container.appendChild(span);
+  }
+}
+
+// ==================== GAME LOOP ====================
+function gameLoop(){
+  if(!state.running) return;
+
+  const now = performance.now();
+  const dt = (now - state.lastFrameTime) / 16.667;
+  state.lastFrameTime = now;
+  state.timerElapsed = (now - state.timerStart) / 1000;
+  document.getElementById('hud-timer').textContent = state.timerElapsed.toFixed(1);
+
+  const area = document.getElementById('game-area');
+  const areaW = area.offsetWidth;
+  const areaH = area.offsetHeight;
+
+  state.spheres.forEach(s => {
+    if(!s.dx && !s.dy) return;
+    s.x += s.dx * dt;
+    s.y += s.dy * dt;
+
+    const r = s.size / 2;
+    if(s.x < r){s.x = r; s.dx = Math.abs(s.dx);}
+    if(s.x > areaW - r){s.x = areaW - r; s.dx = -Math.abs(s.dx);}
+    if(s.y < r){s.y = r; s.dy = Math.abs(s.dy);}
+    if(s.y > areaH - r){s.y = areaH - r; s.dy = -Math.abs(s.dy);}
+
+    if(s.element){
+      s.element.style.left = (s.x - r) + 'px';
+      s.element.style.top = (s.y - r) + 'px';
+    }
+  });
+
+  state.animFrameId = requestAnimationFrame(gameLoop);
+}
+
+// ==================== LEVEL WIN ====================
+function onLevelWin(){
+  state.running = false;
+  if(state.animFrameId){cancelAnimationFrame(state.animFrameId);state.animFrameId=null}
+
+  playWin();
+  const time = state.timerElapsed;
+  state.challengeTimes.push({level: state.currentLevel, time: time});
+
+  if(state.mode === 'challenge'){
+    showChallengeWinModal(time);
+  } else {
+    showTrainingWinModal(time);
+  }
+}
+
+function showTrainingWinModal(time){
+  document.getElementById('win-title').textContent = 'Félicitations !';
+  document.getElementById('win-title').className = 'modal-title win';
+  document.getElementById('win-message').textContent = 'Tu as éliminé toutes les sphères !';
+  document.getElementById('win-time').textContent = `Temps : ${time.toFixed(1)}s`;
+  document.getElementById('win-levels-container').innerHTML = '';
+  document.getElementById('win-buttons').innerHTML = `
+    <button class="btn btn-small btn-accent" onclick="closeModals();startLevel(${state.currentLevel},'training')">Rejouer</button>
+    <button class="btn btn-small" onclick="closeModals();showScreen('menu-screen')">Accueil</button>`;
+  document.getElementById('win-modal').classList.add('active');
+  startConfetti();
+}
+
+function showChallengeWinModal(time){
+  if(state.currentLevel < 13){
+    document.getElementById('win-title').textContent = `Niveau ${state.currentLevel} terminé !`;
+    document.getElementById('win-title').className = 'modal-title win';
+    document.getElementById('win-message').textContent = 'Prépare-toi pour le niveau suivant !';
+    document.getElementById('win-time').textContent = `Temps : ${time.toFixed(1)}s`;
+    document.getElementById('win-levels-container').innerHTML = '';
+    document.getElementById('win-buttons').innerHTML = `
+      <button class="btn btn-small btn-accent" onclick="closeModals();startLevel(${state.currentLevel+1},'challenge')">Niveau Suivant</button>
+      <button class="btn btn-small" onclick="closeModals();showScreen('menu-screen')">Accueil</button>`;
+    document.getElementById('win-modal').classList.add('active');
+    startConfetti();
+  } else {
+    showChallengeFinalModal();
+  }
+}
+
+function showChallengeFinalModal(){
+  const totalTime = state.challengeTimes.reduce((a,b) => a + b.time, 0);
+  let levelsHTML = '<div class="modal-levels-summary">';
+  state.challengeTimes.forEach(r => {
+    levelsHTML += `<div class="level-row"><span>Niveau ${r.level}</span><span>${r.time.toFixed(1)}s</span></div>`;
+  });
+  levelsHTML += '</div>';
+
+  document.getElementById('win-title').textContent = '超级 MEGA VICTOIRE !';
+  document.getElementById('win-title').className = 'modal-title super';
+  document.getElementById('win-message').textContent = 'Tu as terminé les 13 niveaux ! Tu es un true champion de la souris !';
+  document.getElementById('win-time').textContent = '';
+  document.getElementById('win-levels-container').innerHTML = levelsHTML + `<div class="modal-total">TEMPS TOTAL : ${totalTime.toFixed(1)}s</div>`;
+  document.getElementById('win-buttons').innerHTML = `
+    <button class="btn btn-small btn-accent" onclick="closeModals();startChallenge()">Recommencer</button>
+    <button class="btn btn-small" onclick="closeModals();showScreen('menu-screen')">Accueil</button>`;
+  document.getElementById('win-modal').classList.add('active');
+  startConfetti();
+}
+
+// ==================== LEVEL LOSE ====================
+function onLevelLose(){
+  state.running = false;
+  if(state.animFrameId){cancelAnimationFrame(state.animFrameId);state.animFrameId=null}
+
+  playLose();
+
+  if(state.mode === 'challenge'){
+    document.getElementById('lose-message').innerHTML = `
+      Courage ! Tu as éliminé <strong>${state.spheresEliminated}</strong> sphère(s) au niveau ${state.currentLevel}.<br>
+      Tu peux recommencer depuis le niveau 1 ou revenir à l'accueil.`;
+    document.getElementById('lose-buttons').innerHTML = `
+      <button class="btn btn-small btn-danger" onclick="closeModals();startChallenge()">Reprendre au niveau 1</button>
+      <button class="btn btn-small" onclick="closeModals();showScreen('menu-screen')">Accueil</button>`;
+  } else {
+    document.getElementById('lose-message').innerHTML = `
+      Pas de panique ! Tu as éliminé <strong>${state.spheresEliminated}</strong> sphère(s).<br>
+      Essaie encore !`;
+    document.getElementById('lose-buttons').innerHTML = `
+      <button class="btn btn-small btn-danger" onclick="closeModals();startLevel(${state.currentLevel},'training')">Rejouer</button>
+      <button class="btn btn-small" onclick="closeModals();showScreen('menu-screen')">Accueil</button>`;
+  }
+  document.getElementById('lose-modal').classList.add('active');
+}
+
+// ==================== CLOSE MODALS ====================
+function closeModals(){
+  document.getElementById('win-modal').classList.remove('active');
+  document.getElementById('lose-modal').classList.remove('active');
+  stopConfetti();
+}
+
+// ==================== CHALLENGE MODE ====================
+function startChallenge(){
+  ensureAudio();
+  playClick();
+  state.challengeTimes = [];
+  startLevel(1, 'challenge');
+}
+
+// ==================== CONFETTI ====================
+let confettiParticles = [];
+let confettiAnimId = null;
+const confettiCanvas = document.getElementById('confetti-canvas');
+const confettiCtx = confettiCanvas.getContext('2d');
+
+function resizeConfetti(){
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeConfetti);
+resizeConfetti();
+
+function startConfetti(){
+  confettiParticles = [];
+  for(let i = 0; i < 150; i++){
+    confettiParticles.push({
+      x: Math.random() * confettiCanvas.width,
+      y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+      w: Math.random() * 10 + 5,
+      h: Math.random() * 6 + 3,
+      color: ['#ff1744','#ffd740','#00e5ff','#b040ff','#39ff14','#ff6d00','#e040fb'][Math.floor(Math.random()*7)],
+      vx: (Math.random()-0.5)*4,
+      vy: Math.random()*3+2,
+      rot: Math.random()*360,
+      rotV: (Math.random()-0.5)*12,
+      life: 1
+    });
+  }
+  animateConfetti();
+}
+
+function animateConfetti(){
+  confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+  confettiParticles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.rot += p.rotV;
+    p.vy += 0.04;
+    p.life -= 0.003;
+
+    confettiCtx.save();
+    confettiCtx.translate(p.x, p.y);
+    confettiCtx.rotate(p.rot * Math.PI / 180);
+    confettiCtx.globalAlpha = Math.max(0, p.life);
+    confettiCtx.fillStyle = p.color;
+    confettiCtx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+    confettiCtx.restore();
+  });
+
+  confettiParticles = confettiParticles.filter(p => p.life > 0 && p.y < confettiCanvas.height + 50);
+
+  if(confettiParticles.length > 0){
+    confettiAnimId = requestAnimationFrame(animateConfetti);
+  }
+}
+
+function stopConfetti(){
+  if(confettiAnimId){cancelAnimationFrame(confettiAnimId);confettiAnimId=null}
+  confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+  confettiParticles = [];
+}
+
+// ==================== INIT ====================
+showScreen('menu-screen');
+</script>
+</body>
+</html>

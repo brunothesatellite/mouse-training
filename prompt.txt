@@ -1,0 +1,44 @@
+Travaille dans D:\VS Code\mouse-training
+Je veux créer une page web permettant d'entrainer mes enfants (7 et 9 ans) au maniement de la souris d'ordinateur
+Le thème de la page doit être futuriste / science fiction adapté aux enfants
+Le principe est de présenter des jeux où l'on doit cliquer à l'intérieur d'une sphère pour la faire disparaitre, la sphère pouvant être immobile ou mobile. On a 3 vies au départ et dès qu'on clique en dehors d'une sphère on perd une vie. A 0 vies on a perdu. L'objectif est de faire disparaitre les sphères le plus rapidement possible.
+Les sphères doivent être de couleurs et tailles aléatoires, mais visuellement attrayantes pour un enfant. Si possible en représentation un visage grimaçant (comme un ennemi), tu peux les représenter avec un SVG.
+
+Lorsque je lance la page j'ai le choix entre "Entrainement" et "challenge"
+
+Si je clique sur "Entrainement", j'ai le choix entre plusieurs niveaux d'entrainement du niveau 1 au niveau 13:
+
+Quand on clique sur le niveau, il y a un immense compte à rebours de 3 secondes qui prend tout l'écran
+Quand le compte à rebours se termine, le jeu démarre.
+Il y a un chronomètre qui défile en haut de l'écran au milieu (affiche les dixièmes de secondes) et 3 cœurs à droite (les vies du joueur)
+Utilise un fond d'écran aléatoire à chaque partie, dans le thème, lisible pour ne pas rendre la lecture complexe de l'écran et attrayant pour un enfant.
+Au lancement du jeu :
+Niveaux 1 à 3 : il y a 5 sphères immobiles, réparties aléatoirement sur l'écran
+Niveau 1 : sphères de taille grande.
+Niveau 2 : sphères de taille moyenne.
+Niveau 3 : sphères de taille petite.
+
+Niveaux suivants : il y a 1 sphère qui bouge au sein de l'écran dans des directions aléatoires, positionnée aléatoirement sur l'écran au démarrage. Dès qu'elle est éliminée, une autre sphère apparait aléatoirement avec le même comportement. Il y a 5 sphères au total.
+Niveau 4 : les sphères sont de grande taille et bougent lentement
+Niveau 5 : les sphères sont de moyenne taille et bougent lentement
+Niveau 6 : les sphères sont de petite taille et bougent lentement
+
+Niveau 7 : les sphères sont de grande taille et bougent moyennement vite
+Niveau 8 : les sphères sont de moyenne taille et bougent  moyennement vite
+Niveau 9 : les sphères sont de petite taille et bougent  moyennement vite
+
+Niveau 10 : les sphères sont de grande taille et bougent vite
+Niveau 11 : les sphères sont de moyenne taille et bougent  vite
+Niveau 12 : les sphères sont de petite taille et bougent  vite
+
+
+Niveau 13 (final) : il y a 1 sphère qui bouge au sein de l'écran dans des directions aléatoires, positionnée aléatoirement sur l'écran au démarrage. Dès qu'elle est éliminée, une autre sphère apparait aléatoirement avec le même comportement. Il y a 5 sphères au total. Les sphères ont des tailles aléatoires entre (grande, moyenne et petite) et des vitesses aléatoires (entre lent, moyennement vite et vite)
+
+
+Lorsque toutes les sphères sont éliminées, affiche un message de félicitations et le temps mis pour les éliminer. Fait une animation de feux d'artifice ou de paillettes
+Si le joueur a perdu toutes ses vies, affiche un message d'encouragement, indique combien de sphères ont été éliminées et propose de refaire la partie. S'il refuse, retourne au menu principal.
+
+Si je clique sur "Challenge", le jeu va enchainer les 13 niveaux (du 1 au 13). au début de chaque niveau il y aura le compte à rebourd habituel. A la fin de chaque niveau il y aura le message de félicitations habituel. En cas de perte de toutes les vies, il y aura le message d'encouragement et on pourra reprendre soit au niveau 1 soit revenir à l'accueil.
+Si le joueur finit tous les niveaux, alors il y aura un super méga message de félicitation, un mega feu d'artifice avec des pailletes, le résumé de ses temps pour chaque niveau et le temps total. Il pourra choisir ensuite de recommencer ou revenir à l'accueil.
+
+Fait un plan et pose des questions si besoin.
