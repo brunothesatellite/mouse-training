@@ -120,6 +120,24 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',Tahoma,G
   <div class="menu-subtitle">Entrainement Spatial</div>
   <button class="btn" onclick="showLevelSelect()">Entrainement</button>
   <button class="btn btn-secondary" onclick="startChallenge()">Challenge</button>
+  <button class="btn btn-small" style="margin-top:15px" onclick="showInstructions()">Instructions</button>
+</div>
+
+<!-- INSTRUCTIONS MODAL -->
+<div class="modal-overlay" id="instructions-modal">
+  <div class="modal-content">
+    <div class="modal-title win">Comment jouer</div>
+    <div style="text-align:left;color:rgba(255,255,255,0.8);line-height:1.7;font-size:1.05rem;margin:15px 0">
+      <p style="margin-bottom:10px"><strong style="color:var(--accent)">Objectif :</strong> eliminer le plus vite possible toutes les spheres ennemies qui s'affichent a l'ecran.</p>
+      <p style="margin-bottom:10px"><strong style="color:var(--primary)">Controls :</strong> clique gauche sur une sphere pour la faire disparaitre.</p>
+      <p style="margin-bottom:10px"><strong style="color:var(--danger)">Attention :</strong> si tu cliques en dehors d'une sphere, tu perds un coeur. Tu as 3 vies. A 0 vie, c'est perdu !</p>
+      <p style="margin-bottom:10px"><strong style="color:var(--secondary)">Entrainement :</strong> choisis un niveau et joue a ton rythme. Apres chaque victoire, passe au niveau suivant.</p>
+      <p><strong style="color:#ffd740">Challenge :</strong> enchaîne les 13 niveaux d'affilee. Le temps total est cumule. Tu peux recommencer au niveau 1 si tu perds.</p>
+    </div>
+    <div class="modal-buttons">
+      <button class="btn btn-small btn-accent" onclick="closeInstructions()">C'est parti !</button>
+    </div>
+  </div>
 </div>
 
 <!-- LEVEL SELECT SCREEN -->
@@ -705,7 +723,17 @@ function onLevelLose(){
 function closeModals(){
   document.getElementById('win-modal').classList.remove('active');
   document.getElementById('lose-modal').classList.remove('active');
+  document.getElementById('instructions-modal').classList.remove('active');
   stopConfetti();
+}
+
+function showInstructions(){
+  ensureAudio(); playClick();
+  document.getElementById('instructions-modal').classList.add('active');
+}
+function closeInstructions(){
+  playClick();
+  document.getElementById('instructions-modal').classList.remove('active');
 }
 
 // ==================== CHALLENGE MODE ====================
