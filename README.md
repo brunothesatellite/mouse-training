@@ -1,6 +1,8 @@
 # Mouse Training - Entraînement Spatial
 
-Jeu d'entraînement au maniement de la souris d'ordinateur, conçu pour les enfants. Thème futuriste / science-fiction avec des sphères ennemies à éliminer en cliquant dessus.
+Jeu d'entraînement au maniement de la souris d'ordinateur, conçu pour les enfants (7-9 ans). Thème futuriste / science-fiction avec des sphères ennemies à éliminer en cliquant dessus.
+
+![Capture d'écran du jeu](mouse.png)
 
 ---
 
@@ -12,7 +14,7 @@ Ouvrir le fichier `index.html` dans un navigateur web (Chrome, Firefox, Edge, Sa
 
 ### Menu principal
 
-Au lancement, deux modes s'affichent :
+Au lancement, un fond d'espace animé avec étoiles scintillantes et planètes flottantes s'affiche. Deux modes s'affichent :
 
 - **Entrainement** : choisir un niveau et s'entraîner librement
 - **Challenge** : enchaîner les 13 niveaux d'affilée
@@ -31,10 +33,11 @@ Au lancement, deux modes s'affichent :
 - **Haut au centre** : chronomètre (dixièmes de secondes)
 - **Haut à droite** : 3 cœurs représentant les vies restantes
 - **Centre** : zone de jeu contenant les sphères ennemies
+- **Fond** : espace animé avec étoiles scintillantes et planètes flottantes, aléatoire à chaque partie
 
 ### Compte à rebours
 
-Avant chaque niveau, un compte à rebours géant s'affiche : **3**, **2**, **1**, **GO !**. Le jeu démarre uniquement lorsque le compte à rebours est terminé.
+Avant chaque niveau, un compte à rebours géant s'affiche : **3**, **2**, **1**, **GO !** Le jeu démarre uniquement lorsque le compte à rebours est terminé.
 
 ### Sphères ennemies
 
@@ -77,21 +80,21 @@ Comme les niveaux 4-12 (1 sphère à la fois, 5 au total), mais la taille et la 
 
 ### Conditions de victoire et défaite
 
-**Victoire** : éliminer les 5 sphères du niveau. Un message de félicitations s'affiche avec le temps réalisé et une animation de confetti.
+**Victoire** : éliminer les 5 sphères du niveau. Un message de félicitations s'affiche avec le temps réalisé, une mélodie de trompette triomphante et un **feu d'artifice** avec fusées et explosions multicolores sur les côtés de l'écran. En mode Entrainement, un bouton **Niveau Suivant** permet de passer directement au niveau suivant.
 
-**Défaite** : perdre les 3 vies (3 clics en dehors des sphères). Un message d'encouragement affiche le nombre de sphères éliminées.
+**Défaite** : perdre les 3 vies (3 clics en dehors des sphères). Une **musique de trompette triste** joue (4 notes descendantes avec vibrato). Un message d'encouragement affiche le nombre de sphères éliminées et propose de rejouer.
 
 ### Mode Challenge
 
 Le mode Challenge enchaîne les 13 niveaux dans l'ordre :
 
 - Un compte à rebours précède chaque niveau
-- Un message de félicitations apparaît entre chaque niveau avec le temps réalisé
+- Un message de félicitations apparaît entre chaque niveau avec le temps réalisé et des feux d'artifice
 - En cas de défaite, deux options : **Reprendre au niveau 1** ou **Accueil**
 - Après le niveau 13, un **super méga message de félicitations** s'affiche avec :
   - Un récapitulatif de chaque temps par niveau
   - Le temps total cumulé
-  - Une grande animation de confetti
+  - Un mega feu d'artifice
   - Les options **Recommencer** ou **Accueil**
 
 ---
@@ -105,6 +108,7 @@ Le projet est constitué d'un **fichier unique** `index.html` contenant l'intég
 ```
 mouse-training/
 ├── index.html    ← fichier unique contenant tout le projet
+├── mouse.png     ← capture d'écran du menu principal
 ├── prompt.txt    ← description initiale du projet
 └── README.md     ← ce fichier
 ```
@@ -114,11 +118,11 @@ mouse-training/
 | Technologie | Utilisation |
 |-------------|-------------|
 | HTML5 | Structure des écrans et conteneurs |
-| CSS3 | Mise en page, thèmes visuels, animations, dégradés |
+| CSS3 | Mise en page, thèmes visuels, animations, dégradés, étoiles/planètes |
 | JavaScript (ES6+) | Logique de jeu, moteur de rendu, gestion d'état |
 | SVG | Sphères ennemies avec visages (inline, générés dynamiquement) |
-| Canvas 2D | Animation des confetti / paillettes |
-| Web Audio API | Sons synthétisés (clics, éliminations, victoire, défaite) |
+| Canvas 2D | Animation des feux d'artifice |
+| Web Audio API | Sons synthétisés (musiques, effets sonores) |
 
 ### Architecture du code
 
@@ -139,11 +143,12 @@ LEVELS = [
 #### 2. Système audio
 
 Fonctions de synthèse sonore via `AudioContext` :
-- `playClick()` : son de clic menu
-- `playEliminate()` : son d'élimination de sphère (ascending sweep)
+
+- `playClick()` : son de clic menu (sine 880→1320Hz)
+- `playEliminate()` : son d'élimination de sphère (sweep ascending)
 - `playLoseLife()` : son de perte de vie (descending sawtooth)
-- `playWin()` : mélodie de victoire (4 notes ascendantes C-E-G-C)
-- `playLose()` : mélodie de défaite (4 notes descendantes)
+- `playWin()` : fanfare de victoire (triangle, mélodie Do-Ré-Mi-Sol-Do-Sol-Do-Mi + accord final)
+- `playLose()` : trompette triste (sawtooth, Sol-Fa-Mib-Do descendant, vibrato LFO, dernier note longue)
 
 #### 3. Gestion d'état (`state`)
 
@@ -216,14 +221,24 @@ menu-screen → level-screen → game-screen → win-modal / lose-modal
                     └────────────────────────┘
 ```
 
-#### 8. Système de confetti
+#### 8. Système de feux d'artifice
 
-Animation Canvas 2D avec 150 particules :
-- Rectangle coloré (7 couleurs aléatoires)
-- Position, vélocité, rotation, rotation angulaire, durée de vie
-- Gravité (vy += 0.04)
-- Fade out progressif (life -= 0.003)
-- Nettoyage automatique des particules hors écran
+Animation Canvas 2D avec feux d'artifice réalistes :
+
+- **20 fusées** lancées en 2 vagues depuis les côtés gauche/droite
+- **100-160 particules** par explosion (cercle, dispersion, anneaux)
+- **Traînées lumineuses** sur fusées et particules
+- **Halo glow** coloré autour de chaque particule
+- **Gravité réduite** (0.02) pour une durée de vie longue
+- **10 couleurs** de feux d'artifice différentes
+- Canvas positionné au-dessus des modales (z-index: 210)
+
+#### 9. Fond d'espace animé
+
+- **5 gradients** de nébuleuses différentes (aléatoire par partie)
+- **~45 étoiles** scintillantes sur 2 couches (blanches + colorées)
+- **4 planètes** flottantes (bleue avec anneau, orange, verte, violette)
+- Animations CSS `twinkle` et `planetFloat`
 
 ### Gestion du responsive
 
