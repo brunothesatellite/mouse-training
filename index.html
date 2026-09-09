@@ -8,8 +8,8 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-user-select:none}
 :root{--primary:#00e5ff;--secondary:#b040ff;--accent:#39ff14;--danger:#ff1744;--bg-dark:#060620;--bg-card:rgba(255,255,255,0.06)}
-html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg-dark);color:#fff}
-.screen{position:absolute;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:1}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg-dark);color:#fff;position:fixed;top:0;left:0}
+.screen{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:1}
 .screen.active{display:flex}
 
 .bg-1{background:radial-gradient(ellipse at 20% 50%,#2d0060 0%,#180040 40%,#0c0c30 100%),radial-gradient(ellipse at 80% 20%,rgba(0,229,255,0.18) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(176,64,255,0.14) 0%,transparent 50%),linear-gradient(180deg,#0c0c35 0%,#121250 50%,#0c0c35 100%)}
@@ -19,14 +19,14 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',Tahoma,G
 .bg-5{background:radial-gradient(ellipse at 60% 40%,#302800 0%,#1c1800 40%,#0c0c28 100%),radial-gradient(ellipse at 20% 80%,rgba(255,200,0,0.12) 0%,transparent 50%),radial-gradient(ellipse at 90% 20%,rgba(176,64,255,0.14) 0%,transparent 50%),linear-gradient(180deg,#100c00 0%,#201c00 50%,#100c00 100%)}
 
 /* ===== Stars ===== */
-.space-bg::before,.space-bg::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;border-radius:inherit}
+.space-bg::before,.space-bg::after{content:'';position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;border-radius:inherit;overflow:hidden}
 .space-bg::before{z-index:0;background-image:radial-gradient(1px 1px at 5% 8%,#fff,transparent),radial-gradient(1px 1px at 12% 72%,#fff,transparent),radial-gradient(1.5px 1.5px at 22% 32%,#fff,transparent),radial-gradient(1px 1px at 28% 88%,#fff,transparent),radial-gradient(1px 1px at 35% 15%,#fff,transparent),radial-gradient(1.5px 1.5px at 42% 55%,#fff,transparent),radial-gradient(1px 1px at 48% 78%,#fff,transparent),radial-gradient(1px 1px at 55% 25%,#fff,transparent),radial-gradient(1.5px 1.5px at 62% 62%,#fff,transparent),radial-gradient(1px 1px at 68% 5%,#fff,transparent),radial-gradient(1px 1px at 75% 42%,#fff,transparent),radial-gradient(1.5px 1.5px at 82% 85%,#fff,transparent),radial-gradient(1px 1px at 88% 18%,#fff,transparent),radial-gradient(1px 1px at 95% 52%,#fff,transparent),radial-gradient(1px 1px at 8% 45%,rgba(0,229,255,0.8),transparent),radial-gradient(1.2px 1.2px at 32% 58%,rgba(176,64,255,0.8),transparent),radial-gradient(1px 1px at 58% 8%,rgba(57,255,20,0.7),transparent),radial-gradient(1px 1px at 78% 68%,rgba(255,215,64,0.7),transparent),radial-gradient(1px 1px at 18% 92%,#fff,transparent),radial-gradient(1.5px 1.5px at 45% 42%,#fff,transparent),radial-gradient(1px 1px at 65% 95%,#fff,transparent),radial-gradient(1px 1px at 92% 35%,#fff,transparent),radial-gradient(1.2px 1.2px at 38% 75%,rgba(0,229,255,0.6),transparent),radial-gradient(1px 1px at 85% 48%,#fff,transparent);animation:twinkle 4s ease-in-out infinite alternate}
 .space-bg::after{z-index:1;animation:twinkle2 5s ease-in-out infinite alternate;animation-delay:-2.5s;background-image:radial-gradient(1px 1px at 3% 22%,#fff,transparent),radial-gradient(1.2px 1.2px at 15% 55%,#fff,transparent),radial-gradient(1px 1px at 25% 5%,#fff,transparent),radial-gradient(1.5px 1.5px at 33% 38%,#fff,transparent),radial-gradient(1px 1px at 40% 82%,#fff,transparent),radial-gradient(1px 1px at 52% 45%,#fff,transparent),radial-gradient(1px 1px at 58% 12%,#fff,transparent),radial-gradient(1.2px 1.2px at 65% 72%,#fff,transparent),radial-gradient(1px 1px at 72% 28%,#fff,transparent),radial-gradient(1.5px 1.5px at 80% 58%,#fff,transparent),radial-gradient(1px 1px at 88% 82%,#fff,transparent),radial-gradient(1px 1px at 95% 12%,#fff,transparent),radial-gradient(1px 1px at 10% 38%,rgba(255,23,68,0.6),transparent),radial-gradient(1.2px 1.2px at 50% 92%,rgba(255,109,0,0.6),transparent),radial-gradient(1px 1px at 70% 15%,rgba(224,64,251,0.6),transparent),radial-gradient(1px 1px at 30% 65%,#fff,transparent),radial-gradient(1px 1px at 45% 18%,#fff,transparent),radial-gradient(1.5px 1.5px at 75% 88%,#fff,transparent),radial-gradient(1px 1px at 5% 60%,#fff,transparent),radial-gradient(1px 1px at 60% 35%,#fff,transparent),radial-gradient(1px 1px at 90% 72%,#fff,transparent)}
 @keyframes twinkle{0%{opacity:.6}100%{opacity:1}}
 @keyframes twinkle2{0%{opacity:.7}100%{opacity:.4}}
 
 /* ===== Planets ===== */
-.space-bg .planet{position:absolute;border-radius:50%;pointer-events:none;z-index:2;opacity:.35}
+.space-bg .planet{position:absolute;border-radius:50%;pointer-events:none;z-index:2;opacity:.35;overflow:hidden}
 .planet-1{width:180px;height:180px;bottom:40px;right:-40px;background:radial-gradient(circle at 35% 35%,#5c6bc0,#283593 50%,#0d1040);box-shadow:inset -18px -12px 30px rgba(0,0,0,.5),0 0 40px rgba(92,107,192,.25);animation:planetFloat 20s ease-in-out infinite}
 .planet-1::after{content:'';position:absolute;top:38%;left:-8%;width:116%;height:24%;background:rgba(255,255,255,.12);border-radius:50%;transform:rotate(-12deg)}
 .planet-2{width:90px;height:90px;top:60px;left:40px;background:radial-gradient(circle at 38% 35%,#ffab91,#e65100 50%,#4e1a00);box-shadow:inset -10px -6px 18px rgba(0,0,0,.45),0 0 22px rgba(230,81,0,.2);animation:planetFloat2 25s ease-in-out infinite}
@@ -63,8 +63,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',Tahoma,G
 .level-card .num{font-size:1.8rem;font-weight:900;color:var(--primary)}
 .level-card .info{font-size:0.7rem;color:rgba(255,255,255,0.45);margin-top:4px;text-align:center;line-height:1.3}
 
-#game-container{position:absolute;top:0;left:0;width:100%;height:100%}
-#game-area{position:absolute;top:0;left:0;width:100%;height:100%}
+#game-container{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden}
+#game-area{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden}
 
 .hud{position:absolute;top:0;left:0;width:100%;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;z-index:10;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,0.55) 0%,transparent 100%)}
 .hud-level{font-size:1.1rem;font-weight:700;color:var(--primary);text-shadow:0 0 10px rgba(0,229,255,0.5)}
