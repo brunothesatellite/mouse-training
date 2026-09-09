@@ -61,7 +61,8 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',Tahoma,G
 .level-card{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 10px;border:2px solid rgba(255,255,255,0.12);border-radius:14px;cursor:pointer;transition:all .25s;background:var(--bg-card);min-height:80px}
 .level-card:hover{border-color:var(--primary);background:rgba(0,229,255,0.1);box-shadow:0 0 20px rgba(0,229,255,0.15);transform:scale(1.05)}
 .level-card .num{font-size:1.8rem;font-weight:900;color:var(--primary)}
-.level-card .info{font-size:0.7rem;color:rgba(255,255,255,0.45);margin-top:4px;text-align:center;line-height:1.3}
+.level-card .fun-name{font-size:0.75rem;font-weight:700;color:var(--accent);margin-top:4px;text-align:center;line-height:1.2}
+.level-card .info{font-size:0.65rem;color:rgba(255,255,255,0.4);margin-top:2px;text-align:center;line-height:1.3}
 
 #game-container{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden}
 #game-area{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden}
@@ -193,19 +194,19 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Segoe UI',Tahoma,G
 <script>
 // ==================== CONFIGURATION ====================
 const LEVELS = [
-  {id:1, spheres:5, size:'grande', speed:0, movement:false, label:'5 spheres immobiles - Grande'},
-  {id:2, spheres:5, size:'moyenne', speed:0, movement:false, label:'5 spheres immobiles - Moyenne'},
-  {id:3, spheres:5, size:'petite', speed:0, movement:false, label:'5 spheres immobiles - Petite'},
-  {id:4, spheres:5, size:'grande', speed:1, movement:true, label:'Grande - Lente'},
-  {id:5, spheres:5, size:'moyenne', speed:1, movement:true, label:'Moyenne - Lente'},
-  {id:6, spheres:5, size:'petite', speed:1, movement:true, label:'Petite - Lente'},
-  {id:7, spheres:5, size:'grande', speed:2, movement:true, label:'Grande - Moyenne'},
-  {id:8, spheres:5, size:'moyenne', speed:2, movement:true, label:'Moyenne - Moyenne'},
-  {id:9, spheres:5, size:'petite', speed:2, movement:true, label:'Petite - Moyenne'},
-  {id:10, spheres:5, size:'grande', speed:3, movement:true, label:'Grande - Rapide'},
-  {id:11, spheres:5, size:'moyenne', speed:3, movement:true, label:'Moyenne - Rapide'},
-  {id:12, spheres:5, size:'petite', speed:3, movement:true, label:'Petite - Rapide'},
-  {id:13, spheres:5, size:'random', speed:'random', movement:true, label:'ALEATOIRE'}
+  {id:1, spheres:5, size:'grande', speed:0, movement:false, label:'5 spheres immobiles - Grande', funName:'Le Titan Endormi'},
+  {id:2, spheres:5, size:'moyenne', speed:0, movement:false, label:'5 spheres immobiles - Moyenne', funName:'La Boule Perso'},
+  {id:3, spheres:5, size:'petite', speed:0, movement:false, label:'5 spheres immobiles - Petite', funName:'La Mini Bombe'},
+  {id:4, spheres:5, size:'grande', speed:1, movement:true, label:'Grande - Lente', funName:'Le Simballon'},
+  {id:5, spheres:5, size:'moyenne', speed:1, movement:true, label:'Moyenne - Lente', funName:'La Patate Volante'},
+  {id:6, spheres:5, size:'petite', speed:1, movement:true, label:'Petite - Lente', funName:'La Balle Fantome'},
+  {id:7, spheres:5, size:'grande', speed:2, movement:true, label:'Grande - Moyenne', funName:'Le Gladiateur'},
+  {id:8, spheres:5, size:'moyenne', speed:2, movement:true, label:'Moyenne - Moyenne', funName:'Le Rebondisseur'},
+  {id:9, spheres:5, size:'petite', speed:2, movement:true, label:'Petite - Moyenne', funName:"L'Eclair Fou"},
+  {id:10, spheres:5, size:'grande', speed:3, movement:true, label:'Grande - Rapide', funName:'Le Titan Enrage'},
+  {id:11, spheres:5, size:'moyenne', speed:3, movement:true, label:'Moyenne - Rapide', funName:'La Tornade'},
+  {id:12, spheres:5, size:'petite', speed:3, movement:true, label:'Petite - Rapide', funName:'Le Mini Tornado'},
+  {id:13, spheres:5, size:'random', speed:'random', movement:true, label:'ALEATOIRE', funName:'Le Chaos Total'}
 ];
 
 const SIZES = {grande:90, moyenne:62, petite:42};
@@ -413,7 +414,7 @@ function showLevelSelect(){
     card.className = 'level-card';
     const sizeLabel = lv.size === 'random' ? '?' : lv.size.charAt(0).toUpperCase() + lv.size.slice(1);
     const speedLabel = lv.movement ? (lv.speed === 'random' ? '?' : ['','Lente','Moyenne','Rapide'][lv.speed]) : 'Immobile';
-    card.innerHTML = `<div class="num">${lv.id}</div><div class="info">${sizeLabel}<br>${speedLabel}</div>`;
+    card.innerHTML = `<div class="num">${lv.id}</div><div class="fun-name">${lv.funName}</div><div class="info">${sizeLabel}<br>${speedLabel}</div>`;
     card.onclick = () => { playClick(); startLevel(lv.id, 'training'); };
     grid.appendChild(card);
   });
@@ -471,7 +472,7 @@ function startLevel(levelNum, mode){
   state.spheresRemaining = lv.spheres;
 
   showScreen('game-screen');
-  document.getElementById('hud-level').textContent = mode === 'challenge' ? `Challenge - Niveau ${levelNum}` : `Niveau ${levelNum} - ${lv.label}`;
+  document.getElementById('hud-level').textContent = mode === 'challenge' ? `Challenge - Niveau ${levelNum} - ${lv.funName}` : `Niveau ${levelNum} - ${lv.funName}`;
   renderHearts();
   document.getElementById('hud-timer').textContent = '0.0';
 
